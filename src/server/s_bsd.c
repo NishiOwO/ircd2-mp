@@ -788,7 +788,7 @@ void	daemonize(void)
 	if (bootopt & BOOT_TTY)	/* debugging is going to a tty */
 		goto init_dgram;
 
-	(void)fclose(stdout);
+//	(void)fclose(stdout);
 #ifndef _WIN32
 	(void)close(1);
 #endif

@@ -590,10 +590,15 @@
 /* #undef vfork */
 
 #ifndef PREFIX
+#ifdef _WIN32
+#define PREFIX "/ircd"
+#define IRCDCONF_DIR PREFIX
+#else
 #define PREFIX "/usr/local"
+#define IRCDCONF_DIR PREFIX "/etc"
+#endif
 #endif
 
-#define IRCDCONF_DIR PREFIX "/etc"
 #define IRCDCONF_PATH IRCDCONF_DIR "/ircd.conf"
 #define IRCDTUNE_PATH IRCDCONF_DIR "/ircd.tune"
 #define IRCDPID_PATH IRCDCONF_DIR "/ircd.pid"

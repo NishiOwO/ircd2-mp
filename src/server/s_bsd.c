@@ -3266,7 +3266,14 @@ static	int	check_ping(char *buf, int len)
 	aCPing	*cp = NULL;
 	u_long	rtt;
 
-	(void)gettimeofday(&tv, NULL);
+#ifdef _WIN32
+	SYSTEMTIME systm;
+	GetSystemTime(&systm);
+	tv.tv_sec = time(NULL);
+	tv.tv_usec = systm.wMilliseconds * 1000;
+#else
+	(void) gettimeofday(&tv, NULL);
+#endif
 
 	if (len < sizeof(pi) + 8)
 		return -1;

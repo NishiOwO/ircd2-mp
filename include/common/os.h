@@ -715,6 +715,7 @@ typedef unsigned int uint;
 #define close _close
 #define read _read
 #define write _write
+#define isatty _isatty
 #endif
 
 /*

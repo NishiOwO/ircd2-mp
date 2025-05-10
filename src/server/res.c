@@ -543,10 +543,10 @@ static	int	query_name(char *name, int class, int type, ResRQ *rptr)
 #ifdef _WIN32
 	SYSTEMTIME systm;
 	GetSystemTime(&systm);
-	now.tv_sec = time(NULL);
-	now.tv_usec = systm.wMilliseconds * 1000;
+	tv.tv_sec = time(NULL);
+	tv.tv_usec = systm.wMilliseconds * 1000;
 #else
-	(void) gettimeofday(&now, NULL);
+	(void) gettimeofday(&tv, NULL);
 #endif
 #endif
 

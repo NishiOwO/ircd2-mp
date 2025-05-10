@@ -1,3 +1,5 @@
+flags("MultiProcessorCompile")
+
 workspace("ircd2-mp")
         configurations({
                 "Debug",
@@ -30,6 +32,17 @@ project("Common")
 		"include/server",
 		"include"
 	})
+	filter("configurations:Debug")
+		defines({
+			"DEBUG"
+		})
+		symbols("On")
+	filter("configurations:Release")
+		defines({
+			"NDEBUG"
+		})
+		optimize("On")
+	filter({})
 
 project("Server")
 	kind("ConsoleApp")

@@ -882,7 +882,11 @@ static	int	check_init(aClient *cptr, char *sockn)
 #endif
 
 	/* If descriptor is a tty, special checking... */
+#ifdef _WIN32
+	if (0)
+#else
 	if (isatty(cptr->fd))
+#endif
 	    {
 		strncpyzt(sockn, me.sockhost, HOSTLEN);
 		bzero((char *)&sk, sizeof(struct SOCKADDR_IN));

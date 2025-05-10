@@ -1733,7 +1733,11 @@ aClient	*add_connection(aClient *cptr, int fd)
 	 * m_server and m_user instead. Also connection time out help to
 	 * get rid of unwanted connections.
 	 */
+#ifdef _WIN32
+	if (0)
+#else
 	if (isatty(fd)) /* If descriptor is a tty, special checking... */
+#endif
 		get_sockhost(acptr, cptr->sockhost);
 	else
 	    {

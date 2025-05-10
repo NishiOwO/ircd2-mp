@@ -664,14 +664,14 @@ static int	add_cidr_limit(aClient *cptr, aConfItem *aconf)
 		if(pnode == NULL)
 			return -1;
 
-		pnode->data++;
+		((unsigned char*)pnode->data)++;
 		return 1;
 	}
 
 	if((long)pnode->data >= aconf->class->cidr_amount)
 		return 0;
 
-	pnode->data++;
+	((unsigned char*)pnode->data)++;
 	return 1;
 }
 
@@ -687,7 +687,7 @@ static void	remove_cidr_limit(aClient *cptr, aConfItem *aconf)
 	if(pnode == NULL)
 		return;
 
-	pnode->data--;
+	((unsigned char*)pnode->data)--;
 
 	if(((unsigned long) pnode->data) == 0)
 		patricia_remove(ConfCidrTree(aconf), pnode);

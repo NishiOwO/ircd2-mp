@@ -207,13 +207,19 @@
 #define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
+#ifdef _WIN32
+#else
 #define HAVE_STRINGS_H 1
+#endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
 /* Define to 1 if string.h may be included along with strings.h */
+#ifdef _WIN32
+#else
 #define HAVE_STRING_WITH_STRINGS 1
+#endif
 
 /* Define to 1 if you have the `strlcpy' function. */
 #define HAVE_STRLCPY 1
@@ -243,7 +249,10 @@
 /* #undef HAVE_SYS_ERRNO_H */
 
 /* Define to 1 if you have the <sys/file.h> header file. */
+#ifdef _WIN32
+#else
 #define HAVE_SYS_FILE_H 1
+#endif
 
 /* Define to 1 if you have the <sys/filio.h> header file. */
 #ifdef _WIN32
@@ -258,7 +267,10 @@
 #endif
 
 /* Define to 1 if you have the <sys/param.h> header file. */
+#ifdef _WIN32
+#else
 #define HAVE_SYS_PARAM_H 1
+#endif
 
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #ifdef _WIN32
@@ -304,7 +316,10 @@
 #endif
 
 /* Define to 1 if you have the <sys/time.h> header file. */
+#ifdef _WIN32
+#else
 #define HAVE_SYS_TIME_H 1
+#endif
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
@@ -490,7 +505,10 @@
 #define SYS_NERR_DECLARED 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#ifdef _WIN32
+#else
 #define TIME_WITH_SYS_TIME 1
+#endif
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 /* #undef TM_IN_SYS_TIME */

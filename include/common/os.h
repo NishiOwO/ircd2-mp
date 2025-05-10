@@ -26,6 +26,10 @@
  */
 
 #include "setup.h"
+	
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #if defined(linux) || defined(__CYGWIN32__) || defined(__GLIBC__)
 # define _GNU_SOURCE 1
@@ -572,12 +576,16 @@ extern struct hostent *_switch_gethostbyname_r (const char *name,
  *  prototype must be supplied for wait (wait3 and waitpid are unused here).
  */
 
+#ifdef _WIN32
+#define wait(x)
+#else
 #if !defined(HAVE_SYS_WAIT_H)
 # ifdef USE_UNION_WAIT
 extern pid_t wait (union wait *);
 # else
 extern pid_t wait (int *);
 # endif
+#endif
 #endif
 
 /*  <sys/socket.h> portability problems - X/Open SPEC 1170 specifies that
@@ -696,6 +704,9 @@ typedef unsigned int uint;
 #define CLOSESOCK closesocket
 #else
 #define CLOSESOCK close
+#endif
+#ifdef _MSC_VER
+#define snprintf _snprintf
 #endif
 
 /*

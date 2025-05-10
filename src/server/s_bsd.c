@@ -3197,6 +3197,9 @@ void	send_ping(aConfItem *aconf)
 	Ping	pi;
 	struct	SOCKADDR_IN	sin;
 	aCPing	*cp = aconf->ping;
+#ifdef _WIN32
+	SYSTEMTIME systm;
+#endif
 
 #ifdef INET6
 	if (!aconf->ipnum.s6_addr || AND16(aconf->ipnum.s6_addr) == 255 || !cp->port)
@@ -3235,7 +3238,13 @@ void	send_ping(aConfItem *aconf)
 #endif
 	sin.SIN_PORT = htons(cp->port);
 	sin.SIN_FAMILY = AFINET;
-	(void)gettimeofday(&pi.pi_tv, NULL);
+#ifdef _WIN32
+	GetSystemTime(&systm);
+	pi.pi_tv.tv_sec = time(NULL);
+	pi.pi_tv.tv_usec = systm.wMilliseconds * 1000;
+#else
+	(void) gettimeofday(&pi.pi_tv, NULL);
+#endif
 #ifdef INET6
 	Debug((DEBUG_SEND,"Send ping to %s,%d fd %d, %d bytes",
 	       inet_ntop(AF_INET6, (char *)&aconf->ipnum, ipv6string, sizeof(ipv6string)),

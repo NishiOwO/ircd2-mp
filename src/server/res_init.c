@@ -654,7 +654,15 @@ u_int	ircd_res_randomid(void)
 {
 	struct timeval now;
 
-	gettimeofday(&now, NULL);
+#ifdef _WIN32
+	SYSTEMTIME systm;
+	GetSystemTime(&systm);
+	now.tv_sec = time(NULL);
+	now.tv_usec = systm.wMilliseconds * 1000;
+#else
+	(void) gettimeofday(&now, NULL);
+#endif
+
 	return (0xffff & (now.tv_sec ^ now.tv_usec ^ getpid()));
 }
 

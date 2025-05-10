@@ -540,7 +540,14 @@ static	int	query_name(char *name, int class, int type, ResRQ *rptr)
 #ifndef LRAND48
 	struct	timeval	tv;
 
-	(void) gettimeofday(&tv, NULL);
+#ifdef _WIN32
+	SYSTEMTIME systm;
+	GetSystemTime(&systm);
+	now.tv_sec = time(NULL);
+	now.tv_usec = systm.wMilliseconds * 1000;
+#else
+	(void) gettimeofday(&now, NULL);
+#endif
 #endif
 
 	bzero(buf, sizeof(buf));

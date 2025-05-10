@@ -142,6 +142,26 @@
 # ifndef SD_BOTH
 #  define SD_BOTH 2
 # endif
+
+# ifndef EWOULDBLOCK
+#  define EWOULDBLOCK WSAEWOULDBLOCK
+# endif
+
+# ifndef ENOBUFS
+#  define ENOBUFS WSAENOBUFS
+# endif
+
+# ifndef EMSGSIZE
+#  define EMSGSIZE WSAEMSGSIZE
+# endif
+
+# ifndef EINPROGRESS
+#  define EINPROGRESS WSAEINPROGRESS
+# endif
+
+# ifndef ETIMEDOUT
+#  define ETIMEDOUT WSAETIMEDOUT
+# endif
 #endif
 
 #ifdef HAVE_SYS_STAT_H

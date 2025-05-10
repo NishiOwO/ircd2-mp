@@ -257,7 +257,10 @@
 /* Define to 1 if you have the <sys/filio.h> header file. */
 #ifdef _WIN32
 #else
+#ifdef linux
+#else
 #define HAVE_SYS_FILIO_H 1
+#endif
 #endif
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */

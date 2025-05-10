@@ -45,7 +45,7 @@ int	portnum = -1;		    /* Server port number, listening this */
 char	*configfile = IRCDCONF_PATH;	/* Server configuration file */
 int	debuglevel = -1;		/* Server debug level */
 #ifdef _WIN32
-int	bootopt = BOOT_TTY|BOOT_PROT|BOOT_STRICTPROT;	/* Server boot option flags */
+int	bootopt = BOOT_CONSOLE|BOOT_PROT|BOOT_STRICTPROT;	/* Server boot option flags */
 #else
 int	bootopt = BOOT_PROT|BOOT_STRICTPROT;	/* Server boot option flags */
 #endif

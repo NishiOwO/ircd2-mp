@@ -5,7 +5,11 @@ cd obj
 SRC=`find ../src -name "*.c" -and -not -name "fileio.c" -and -not -name "config_read.c"`
 for i in $SRC; do
 	NAME=`echo $i | rev | cut -d"/" -f1 | rev`.hash
-	HASH=`md5sum $i | cut -d" " -f1`
+	if which md5 >/dev/null 2>&1; then
+		HASH=`md5 $i | rev | cut -d" " -f1 | rev`
+	else
+		HASH=`md5sum $i | cut -d" " -f1`
+	fi
 	if [ -f "$NAME" ]; then
 		if [ "`cat $NAME`" = "$HASH" ]; then
 			continue

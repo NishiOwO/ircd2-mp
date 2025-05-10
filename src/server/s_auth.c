@@ -542,6 +542,15 @@ void	start_auth(aClient *cptr)
 
 	SOCK_LEN_TYPE ulen, tlen;
 
+	Link* lnk;
+	for(lnk = cptr->acpt->confs; lnk != NULL; lnk = lnk->next){
+		if(IsConfSkipIdent(lnk->value.aconf)){
+			cptr->authfd = -1;
+			sendto_one(cptr, ":%s 020 * :Your ident check has been skipped", ME);
+			return;
+		}
+	}
+
 # if defined(USE_IAUTH)
 	if ((iauth_options & XOPT_REQUIRED) && adfd < 0)
 		return;

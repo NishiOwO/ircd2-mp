@@ -182,6 +182,7 @@ char	*iline_flags_to_string(long flags)
 /* Convert P-line flags from string
  * D - delayed port
  * S - server only port
+ * I - skip ident check (added in +mp)
  */
 long pline_flags_parse(char *string)
 {
@@ -193,6 +194,10 @@ long pline_flags_parse(char *string)
 	if (index(string, 'S'))
 	{
 		tmp |= PFLAG_SERVERONLY;
+	}
+	if (index(string, 'I'))
+	{
+		tmp |= PFLAG_SKIPIDENT;
 	}
 	return tmp;
 }
@@ -211,6 +216,11 @@ char *pline_flags_to_string(long flags)
 	if (flags & PFLAG_SERVERONLY)
 	{
 		*s++ = 'S';
+	}
+			
+	if (flags & PFLAG_SKIPIDENT)
+	{
+		*s++ = 'I';
 	}
 	
 	if (s == pfsbuf)
@@ -664,14 +674,14 @@ static int	add_cidr_limit(aClient *cptr, aConfItem *aconf)
 		if(pnode == NULL)
 			return -1;
 
-		((unsigned char*)pnode->data)++;
+		pnode->data = ((unsigned char*)pnode->data) + 1;
 		return 1;
 	}
 
 	if((long)pnode->data >= aconf->class->cidr_amount)
 		return 0;
 
-	((unsigned char*)pnode->data)++;
+	pnode->data = ((unsigned char*)pnode->data) + 1;
 	return 1;
 }
 
@@ -687,7 +697,7 @@ static void	remove_cidr_limit(aClient *cptr, aConfItem *aconf)
 	if(pnode == NULL)
 		return;
 
-	((unsigned char*)pnode->data)--;
+	pnode->data = ((unsigned char*)pnode->data) - 1;
 
 	if(((unsigned long) pnode->data) == 0)
 		patricia_remove(ConfCidrTree(aconf), pnode);

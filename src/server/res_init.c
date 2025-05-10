@@ -247,12 +247,14 @@ int	ircd_res_init(void)
 		IP4_ARRAY arr;
 		DWORD b;
 		int i;
-		DnsQueryConfig(DnsConfigDnsServerList, DNS_CONFIG_FLAG_ALLOC, NULL, NULL, (void*)&arr, &b);
-		for(i = 0; i < arr.AddrCount; i++){
-			ircd_res.nsaddr_list[nserv].SIN_ADDR.s_addr = arr.AddrArray[i];
-			ircd_res.nsaddr_list[nserv].SIN_FAMILY = AFINET;
-			ircd_res.nsaddr_list[nserv].SIN_PORT = htons(NAMESERVER_PORT);
-			nserv++;
+		if(DnsQueryConfig(DnsConfigDnsServerList, DNS_CONFIG_FLAG_ALLOC, NULL, NULL, (void*)&arr, &b) == 0){
+			for(i = 0; i < arr.AddrCount; i++){
+				ircd_res.nsaddr_list[nserv].SIN_ADDR.s_addr = arr.AddrArray[i];
+				ircd_res.nsaddr_list[nserv].SIN_FAMILY = AFINET;
+				ircd_res.nsaddr_list[nserv].SIN_PORT = htons(NAMESERVER_PORT);
+				nserv++;
+			}
+			LocalFree(&arr);
 		}
 	}
 #endif

@@ -135,6 +135,7 @@
 
 #ifdef HAVE_WINSOCK_H
 # include <winsock.h>
+# include <windns.h>
 # define SHUT_RD SD_BOTH
 # define ioctl(a,b,c) ioctlsocket(a,b,(u_long*)c)
 

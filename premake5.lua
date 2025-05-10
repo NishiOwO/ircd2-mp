@@ -59,7 +59,10 @@ project("Server")
 	})
 	links("Common")
 	filter("system:windows")
-	links("wsock32")
+		links({
+			"wsock32",
+			"dnsapi"
+		})
 	filter({})
 	filter("configurations:Debug")
 		defines({

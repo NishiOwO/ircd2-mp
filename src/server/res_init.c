@@ -242,6 +242,21 @@ int	ircd_res_init(void)
 		*pp++ = 0;
 	}
 
+#ifdef _WIN32
+	{
+		IP4_ARRAY arr;
+		DWORD b;
+		int i;
+		DnsQueryConfig(DnsConfigDnsServerList, DNS_CONFIG_FLAG_ALLOC, NULL, NULL, (void*)&arr, &b);
+		for(i = 0; i < arr.AddrCount; i++){
+			ircd_res.nsaddr_list[nserv].SIN_ADDR.s_addr = arr.AddrArray[i];
+			ircd_res.nsaddr_list[nserv].SIN_FAMILY = AFINET;
+			ircd_res.nsaddr_list[nserv].SIN_PORT = htons(NAMESERVER_PORT);
+			nserv++;
+		}
+	}
+#endif
+
 #define	MATCH(line, name) \
 	(!strncmp(line, name, sizeof(name) - 1) && \
 	(line[sizeof(name) - 1] == ' ' || \

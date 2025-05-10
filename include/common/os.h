@@ -707,6 +707,10 @@ typedef unsigned int uint;
 #endif
 #ifdef _MSC_VER
 #define snprintf _snprintf
+#define open _open
+#define close _close
+#define read _read
+#define write _write
 #endif
 
 /*

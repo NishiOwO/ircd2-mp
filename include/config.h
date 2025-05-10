@@ -543,8 +543,8 @@
  *
  * Defining to 0 disables entering split-mode.
  */
-#define DEFAULT_SPLIT_USERS	65000
-#define DEFAULT_SPLIT_SERVERS	80
+#define DEFAULT_SPLIT_USERS	0
+#define DEFAULT_SPLIT_SERVERS	0
 
 /*
 ** Notice sent to connecting users if the server is in the split-mode.

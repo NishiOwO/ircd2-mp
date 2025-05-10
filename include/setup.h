@@ -366,6 +366,13 @@
 #define HAVE_UNISTD_H 1
 #endif
 
+/* Define to 1 if you have the <io.h> header file. */
+#ifdef _WIN32
+#define HAVE_IO_H 1
+#else
+/* #undef HAVE_IO_H */
+#endif
+
 /* Define to 1 if you have the <utmp.h> header file. */
 #ifdef _WIN32
 #else

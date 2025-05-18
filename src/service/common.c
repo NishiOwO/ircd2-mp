@@ -73,7 +73,9 @@ void common(void){
 	}else if(strcmp(ircpresp.cmd, "NJOIN") == 0 && arrlen(ircpresp.param) >= 2){
 		ircchan_t c;
 		int i;
+		int k;
 		int has = 0;
+		int old = 0;
 		strcpy(c.name, ircpresp.param[0]);
 		c.joined = 0;
 		c.users = NULL;
@@ -83,9 +85,50 @@ void common(void){
 				break;
 			}
 		}
-		if(has){
-			/* TODO: add user to chans[i].users */;
-		}else{
+		for(k = 0;; k++){
+			char ch = ircpresp.param[1][k];
+			if(ch == ',' || ch == 0){
+				int m = (ircpresp.param[1][old] == '@' && ircpresp.param[1][old + 1] == '@') ? 2 : ((ircpresp.param[1][old] == '@' || ircpresp.param[1][old] == '+') ? 1 : 0);
+				char* s = malloc(k - old + 1 - m);
+				char* u;
+				int j;
+				ircchanuser_t cu;
+				memcpy(s, ircpresp.param[1] + old + m, k - old - m);
+				s[k - old - m] = 0;
+
+				/* s seems to be UID */
+				for(j = 0; j < arrlen(users); j++){
+					if(strcmp(users[j].uid, s) == 0){
+						u = copystr(users[j].name);
+						break;
+					}
+				}
+
+				cu.name = u;
+				cu.checked = ircpresp.param[1][old] == '@' ? 0 : -1;
+				if(has){
+					int userin = 0;
+					for(j = 0; j < arrlen(chans[i].users); j++){
+						if(strcmp(chans[i].users[j].name, u) == 0){
+							userin = 1;
+							break;
+						}
+					}
+					if(!userin){
+						arrput(chans[i].users, cu);
+					}else{
+						free(u);
+					}
+				}else{
+					arrput(c.users, cu);
+				}
+
+				free(s);
+				old = k + 1;
+				if(ch == 0) break;
+			}
+		}
+		if(!has){
 			arrput(chans, c);
 		}
 	}

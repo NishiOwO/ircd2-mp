@@ -49,10 +49,15 @@ typedef struct ircuser_ {
 	char mode[MODESIZE + 1];
 } ircuser_t;
 
+typedef struct ircchanuser_ {
+	char* name;
+	int checked;
+} ircchanuser_t;
+
 typedef struct ircchan_ {
 	char name[CHANSIZE + 1];
 	int joined;
-	char** users;
+	ircchanuser_t* users;
 } ircchan_t;
 
 extern int ircport;
@@ -98,6 +103,7 @@ FILE* dbopen(const char* path);
 void dbdel(FILE* f, const char* key);
 void dbset(FILE* f, const char* key, dbdata_t* val);
 int dbget(FILE* f, const char* key, dbdata_t* val);
+char* dbeach(FILE* f, dbdata_t* val);
 void dbclose(FILE* f);
 
 #ifdef _WIN32

@@ -62,6 +62,33 @@ void dbset(FILE* f, const char* key, dbdata_t* val){
 	fflush(f);
 }
 
+char* dbeach(FILE* f, dbdata_t* val){
+	char s2[KEYSIZE + 1];
+	unsigned char buf[VALSIZE + 2];
+	s2[KEYSIZE] = 0;
+	while(1){
+		int a = 0;
+		unsigned char n;
+		if(fread(s2, 1, KEYSIZE, f) < KEYSIZE) break;
+		if(s2[0] == 0){
+			fread(buf, 1, VALSIZE + 2, f);
+			continue;
+		}
+
+		fread(&n, 1, 1, f);
+		a = a << 8;
+		a = a | n;
+		fread(&n, 1, 1, f);
+		a = a << 8;
+		a = a | n;
+
+		val->size = a;
+		fread(val->value, 1, VALSIZE, f);
+		return copystr(s2);
+	}
+	return NULL;
+}
+
 int dbget(FILE* f, const char* key, dbdata_t* val){
 	char s2[KEYSIZE + 1];
 	unsigned char buf[VALSIZE];

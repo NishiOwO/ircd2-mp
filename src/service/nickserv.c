@@ -27,6 +27,7 @@ void nickserv(void){
 					vasend(ircfd, ":NickServ NOTICE %s :This nickname is already registered.\r\n", ircpresp.from);
 				}else if(arrlen(args) >= 2 && strlen(args[1]) <= PASSSIZE){
 					dbuser_t* u = (dbuser_t*)&d.value[0];
+					memset(d.value, 0, sizeof(d.value));
 
 					setauth(ircpresp.from, 1);
 
@@ -48,9 +49,25 @@ void nickserv(void){
 				if(!dbget(db_user, ircpresp.from, &d)){
 					vasend(ircfd, ":NickServ NOTICE %s :This nickname is not registered.\r\n", ircpresp.from);
 				}else if(isauth(ircpresp.from)){
+					char* key;
+
 					setauth(ircpresp.from, 0);
 					vasend(ircfd, ":NickServ NOTICE %s :Dropped nickname.\r\n", ircpresp.from);
+
 					dbdel(db_user, ircpresp.from);
+
+					fseek(db_chan, 0, SEEK_SET);
+					while((key = dbeach(db_chan, &d)) != NULL){
+						dbchan_t* c = (dbchan_t*)&d.value[0];
+						char buf[USERSIZE + 1];
+						buf[USERSIZE] = 0;
+						memcpy(buf, c->owner, USERSIZE);
+						if(strcmp(buf, ircpresp.from) == 0){
+//							dbdel(db_chan, key);
+							fseek(db_chan, 0, SEEK_SET);
+						}
+						free(key);
+					}
 				}else{
 					vasend(ircfd, ":NickServ NOTICE %s :Identify first.\r\n", ircpresp.from);
 				}
@@ -81,7 +98,7 @@ void nickserv(void){
 					vasend(ircfd, ":NickServ NOTICE %s :Incorrect arguments.\r\n", ircpresp.from);
 				}
 			}else{
-				vasend(ircfd, ":OperServ NOTICE %s :Invalid subcommand.\r\n", ircpresp.from);
+				vasend(ircfd, ":NickServ NOTICE %s :Invalid subcommand.\r\n", ircpresp.from);
 			}
 			argfree(args);
 		}

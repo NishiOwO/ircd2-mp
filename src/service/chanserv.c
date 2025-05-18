@@ -17,6 +17,8 @@ void chanserv(void){
 					vasend(ircfd, ":ChanServ NOTICE %s :Identify yourself first.\r\n", ircpresp.from);
 				}else{
 					dbchan_t* c = (dbchan_t*)&d.value[0];
+					memset(d.value, 0, sizeof(d.value));
+
 					d.size = sizeof(*c);
 
 					memset(c->pass, 0, PASSSIZE);

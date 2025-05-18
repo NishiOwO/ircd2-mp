@@ -9,6 +9,34 @@ char* copystr(char* str){
 	return s;
 }
 
+char** argsplit(char* arg){
+	char** r = NULL;
+	char* b = copystr(arg);
+	int i;
+	int old = 0;
+	for(i = 0;; i++){
+		if(b[i] == ' ' || b[i] == 0){
+			char oldc = b[i];
+			char* s;
+			b[i] = 0;
+			s = copystr(b + old);
+			arrput(r, s);
+			old = i + 1;
+			if(oldc == 0) break;
+		}
+	}
+	free(b);
+	return r;
+}
+
+void argfree(char** args){
+	int i;
+	for(i = 0; i < arrlen(args); i++){
+		free(args[i]);
+	}
+	arrfree(args);
+}
+
 int vasend(int fd, char* fmt, ...){
 	char buf[1024];
 	va_list va;

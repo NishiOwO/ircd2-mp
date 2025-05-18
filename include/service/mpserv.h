@@ -8,6 +8,7 @@
 #define VALSIZE		2048
 #define MODESIZE	256
 #define USERSIZE	256
+#define PASSSIZE	256
 
 /* 30 days */
 #define NICKEXPIRE	(30*24*60*60)
@@ -25,8 +26,16 @@ typedef struct dbdata_ {
 	unsigned char value[VALSIZE];
 } dbdata_t;
 
+#pragma pack(1)
+typedef struct dbuser_ {
+	char pass[PASSSIZE];
+	time_t expire;
+} dbuser_t;
+#pragma pack()
+
 typedef struct ircuser_ {
 	int ident;
+	int auth;
 	char uid[USERSIZE];
 	char name[USERSIZE];
 	char mode[MODESIZE];
@@ -44,7 +53,9 @@ extern ircuser_t* users;
 extern FILE* db_user;
 extern FILE* db_chan;
 
-char* copystr(char*);
+char* copystr(char* str);
+char** argsplit(char* arg);
+void argfree(char** args);
 
 int readresp(int fd);
 int vasend(int fd, char* fmt, ...);
@@ -69,5 +80,11 @@ void dbdel(FILE* f, const char* key);
 void dbset(FILE* f, const char* key, dbdata_t* val);
 int dbget(FILE* f, const char* key, dbdata_t* val);
 void dbclose(FILE* f);
+
+#ifdef _WIN32
+#define mpstrcasecmp _stricmp
+#else
+#define mpstrcasecmp strcasecmp
+#endif
 
 #endif

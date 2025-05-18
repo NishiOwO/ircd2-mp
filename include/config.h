@@ -629,6 +629,9 @@
 
 /* define DEBUGMODE to enable debugging mode.*/
 #undef	DEBUGMODE
+#ifdef DEBUG
+#define DEBUGMODE
+#endif
 
 /*
  * Time interval to wait and if no messages have been received, then check for

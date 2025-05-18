@@ -1,4 +1,7 @@
 /obj
 /bin
 *.make
+*.core
+*.db
+.*.*
 Makefile

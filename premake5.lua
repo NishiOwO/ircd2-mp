@@ -75,3 +75,30 @@ project("Server")
 		})
 		optimize("On")
 	filter({})
+
+project("Service")
+	kind("ConsoleApp")
+	targetname("service")
+	files("src/service/*.c")
+	includedirs({
+		"include/common",
+		"include/service",
+		"include"
+	})
+	links("Common")
+	filter("system:windows")
+		links({
+			"wsock32"
+		})
+	filter({})
+	filter("configurations:Debug")
+		defines({
+			"DEBUG"
+		})
+		symbols("On")
+	filter("configurations:Release")
+		defines({
+			"NDEBUG"
+		})
+		optimize("On")
+	filter({})

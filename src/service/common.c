@@ -36,8 +36,21 @@ void common(void){
 		int i;
 		for(i = 0; i < arrlen(users); i++){
 			if(strcmp(users[i].uid, ircpresp.from) == 0){
+				int j;
 				printf("Removed UID = %s\n", users[i].uid);
 				arrdel(users, i);
+
+				for(j = 0; j < arrlen(chans); j++){
+					int k;
+					for(k = 0; k < arrlen(chans[j].users); k++){
+						if(strcmp(chans[j].users[k].name, users[i].name) == 0){
+							free(chans[j].users[k].name);
+							arrdel(chans[j].users, k);
+							break;
+						}
+					}
+				}
+
 				break;
 			}
 		}
@@ -130,6 +143,29 @@ void common(void){
 		}
 		if(!has){
 			arrput(chans, c);
+		}
+	}else if(strcmp(ircpresp.cmd, "PART") == 0 && arrlen(ircpresp.param) >= 1){
+		int i;
+		for(i = 0; i < arrlen(chans); i++){
+			if(strcmp(ircpresp.param[0], chans[i].name) == 0){
+				int j;
+				char* u;
+				for(j = 0; j < arrlen(users); j++){
+					if(strcmp(users[j].uid, ircpresp.from) == 0){
+						u = copystr(users[j].name);
+						break;
+					}
+				}
+				for(j = 0; j < arrlen(chans[i].users); j++){
+					if(strcmp(chans[i].users[j].name, u) == 0){
+						free(chans[i].users[j].name);
+						arrdel(chans[i].users, j);
+						break;
+					}
+				}
+				free(u);
+				break;
+			}
 		}
 	}
 }

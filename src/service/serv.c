@@ -9,6 +9,16 @@ void channel_scan(void){
 		for(i = 0; i < arrlen(chans); i++){
 			dbdata_t d;
 			int first = !chans[i].joined;
+
+			if(arrlen(chans[i].users) == 0 && !first){
+				vasend(ircfd, ":OperServ PART %s\r\n", chans[i].name);
+				vasend(ircfd, ":ChanServ PART %s\r\n", chans[i].name);
+				arrfree(chans[i].users);
+				arrdel(chans, i);
+				i = -1;
+				continue;
+			}
+
 			if(first) vasend(ircfd, ":%s NJOIN %s @OperServ,@ChanServ\r\n", servhost, chans[i].name);
 			chans[i].joined = 1;
 			if(dbget(db_chan, chans[i].name, &d)){

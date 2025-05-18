@@ -19,6 +19,15 @@ char* getfield(char* str, int* cursor){
 	return &str[old];
 }
 
+#ifdef POSIX_SIGNALS
+void term(int sig){
+	vasend(ircfd, ":ChanServ QUIT :Interrupted!\r\n");
+	vasend(ircfd, ":NickServ QUIT :Interrupted!\r\n");
+	vasend(ircfd, ":OperServ QUIT :Interrupted!\r\n");
+	vasend(ircfd, ":%s SQUIT\r\n", servhost);
+}
+#endif
+
 int main(int argc, char** argv){
 	FILE* f;
 	const char* confpath = IRCDCONF_DIR;
@@ -121,7 +130,16 @@ int main(int argc, char** argv){
 	}
 
 	servinit();
+#ifdef POSIX_SIGNALS
+	signal(SIGINT, term);
+	signal(SIGTERM, term);
+#endif
 	servloop();
+
+	printf("Shutdown\n");
+
+	dbclose(db_user);
+	dbclose(db_chan);
 
 	return 0;
 }

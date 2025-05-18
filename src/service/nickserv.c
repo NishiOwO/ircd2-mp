@@ -27,14 +27,8 @@ void nickserv(void){
 					vasend(ircfd, ":NickServ NOTICE %s :This nickname is already registered.\r\n", ircpresp.from);
 				}else if(arrlen(args) >= 2 && strlen(args[1]) <= PASSSIZE){
 					dbuser_t* u = (dbuser_t*)&d.value[0];
-					int i;
 
-					for(i = 0; i < arrlen(users); i++){
-						if(strcmp(users[i].name, ircpresp.from) == 0){
-							users[i].auth = 1;
-							break;
-						}
-					}
+					setauth(ircpresp.from, 1);
 
 					d.size = sizeof(*u);
 
@@ -48,21 +42,24 @@ void nickserv(void){
 				}else{
 					vasend(ircfd, ":NickServ NOTICE %s :Arguments are incorrect, or nickname is too long.\r\n", ircpresp.from);
 				}
-			}else if(mpstrcasecmp(args[0], "IDENTIFY") == 0){
+			}else if(mpstrcasecmp(args[0], "DROP") == 0){
 				dbdata_t d;
-				int i;
-				int ath = 0;
-
-				for(i = 0; i < arrlen(users); i++){
-					if(strcmp(users[i].name, ircpresp.from) == 0){
-						ath = users[i].auth;
-						break;
-					}
-				}
 
 				if(!dbget(db_user, ircpresp.from, &d)){
 					vasend(ircfd, ":NickServ NOTICE %s :This nickname is not registered.\r\n", ircpresp.from);
-				}else if(ath){
+				}else if(isauth(ircpresp.from)){
+					setauth(ircpresp.from, 0);
+					vasend(ircfd, ":NickServ NOTICE %s :Dropped nickname.\r\n", ircpresp.from);
+					dbdel(db_user, ircpresp.from);
+				}else{
+					vasend(ircfd, ":NickServ NOTICE %s :Identify first.\r\n", ircpresp.from);
+				}
+			}else if(mpstrcasecmp(args[0], "IDENTIFY") == 0){
+				dbdata_t d;
+
+				if(!dbget(db_user, ircpresp.from, &d)){
+					vasend(ircfd, ":NickServ NOTICE %s :This nickname is not registered.\r\n", ircpresp.from);
+				}else if(isauth(ircpresp.from)){
 					vasend(ircfd, ":NickServ NOTICE %s :You are already identified.\r\n", ircpresp.from);
 				}else if(arrlen(args) >= 2){
 					char pass[PASSSIZE + 1];
@@ -71,12 +68,7 @@ void nickserv(void){
 
 					memcpy(pass, u->pass, PASSSIZE);
 					if(strcmp(args[1], pass) == 0){
-						for(i = 0; i < arrlen(users); i++){
-							if(strcmp(users[i].name, ircpresp.from) == 0){
-								users[i].auth = 1;
-								break;
-							}
-						}
+						setauth(ircpresp.from, 1);
 
 						u->expire = time(NULL) + NICKEXPIRE;
 						dbset(db_user, ircpresp.from, &d);
@@ -88,6 +80,8 @@ void nickserv(void){
 				}else{
 					vasend(ircfd, ":NickServ NOTICE %s :Incorrect arguments.\r\n", ircpresp.from);
 				}
+			}else{
+				vasend(ircfd, ":OperServ NOTICE %s :Invalid subcommand.\r\n", ircpresp.from);
 			}
 			argfree(args);
 		}

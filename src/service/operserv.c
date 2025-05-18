@@ -5,24 +5,28 @@
 
 void operserv(void){
 	if(strcmp(ircpresp.cmd, "PRIVMSG") == 0 && arrlen(ircpresp.param) > 1 && strcmp(ircpresp.param[0], "OperServ") == 0){
-		int i;
-		int oper = 0;
-		for(i = 0; i < arrlen(users); i++){
-			if(strcmp(users[i].name, ircpresp.from) == 0){
-				int j;
-				for(j = 0; users[i].mode[j] != 0; j++){
-					if(users[i].mode[j] == 'o'){
-						/* this user is server op, allow using operserv */
-						oper = 1;
-						break;
+		if(isoper(ircpresp.from)){
+			char** args = argsplit(ircpresp.param[1]);
+			if(args != NULL){
+				if(mpstrcasecmp(args[0], "MODE") == 0){
+					if(arrlen(args) >= 4){
+						vasend(ircfd, ":OperServ MODE %s %s %s\r\n", args[1], args[2], args[3]);
+					}else{
+						vasend(ircfd, ":OperServ NOTICE %s :Incorrect arguments.\r\n", ircpresp.from);
 					}
+				}else if(mpstrcasecmp(args[0], "KICK") == 0){
+					if(arrlen(args) >= 3){
+						vasend(ircfd, ":%s KICK %s %s\n", servhost, args[1], args[2]);
+					}else{
+						vasend(ircfd, ":OperServ NOTICE %s :Incorrect arguments.\r\n", ircpresp.from);
+					}
+				}else{
+					vasend(ircfd, ":OperServ NOTICE %s :Invalid subcommand.\r\n", ircpresp.from);
 				}
-				break;
+				argfree(args);
 			}
-		}
-		if(oper){
 		}else{
-			vasend(ircfd, ":OperServ NOTICE %s :Access denied\r\n", ircpresp.from);
+			vasend(ircfd, ":OperServ NOTICE %s :Access denied.\r\n", ircpresp.from);
 		}
 	}
 }

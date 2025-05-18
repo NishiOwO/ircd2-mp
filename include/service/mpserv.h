@@ -8,7 +8,9 @@
 #define VALSIZE		2048
 #define MODESIZE	256
 #define USERSIZE	256
+#define CHANSIZE	256
 #define PASSSIZE	256
+#define TOPICSIZE	256
 
 /* 30 days */
 #define NICKEXPIRE	(30*24*60*60)
@@ -31,15 +33,27 @@ typedef struct dbuser_ {
 	char pass[PASSSIZE];
 	time_t expire;
 } dbuser_t;
+
+typedef struct dbchan_ {
+	char owner[USERSIZE];
+	char pass[PASSSIZE];
+	char topic[TOPICSIZE];
+} dbchan_t;
 #pragma pack()
 
 typedef struct ircuser_ {
 	int ident;
 	int auth;
-	char uid[USERSIZE];
-	char name[USERSIZE];
-	char mode[MODESIZE];
+	char uid[USERSIZE + 1];
+	char name[USERSIZE + 1];
+	char mode[MODESIZE + 1];
 } ircuser_t;
+
+typedef struct ircchan_ {
+	char name[CHANSIZE + 1];
+	int joined;
+	char** users;
+} ircchan_t;
 
 extern int ircport;
 extern char* servhost;
@@ -49,19 +63,24 @@ extern char* ircresp;
 extern ircresp_t ircpresp;
 extern int ircfd;
 extern ircuser_t* users;
+extern ircchan_t* chans;
 
 extern FILE* db_user;
 extern FILE* db_chan;
 
-char* copystr(char* str);
-char** argsplit(char* arg);
+char* copystr(const char* str);
+char** argsplit(const char* arg);
 void argfree(char** args);
 
 int readresp(int fd);
-int vasend(int fd, char* fmt, ...);
+int vasend(int fd, const char* fmt, ...);
 void parseresp(void);
 
 void adduser(int fd, const char* name);
+
+int isauth(const char* name);
+void setauth(const char* name, int auth);
+int isoper(const char* name);
 
 void servinit(void);
 void servloop(void);

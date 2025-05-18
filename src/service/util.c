@@ -3,13 +3,13 @@
 
 #include "stb_ds.h"
 
-char* copystr(char* str){
+char* copystr(const char* str){
 	char* s = malloc(strlen(str) + 1);
 	strcpy(s, str);
 	return s;
 }
 
-char** argsplit(char* arg){
+char** argsplit(const char* arg){
 	char** r = NULL;
 	char* b = copystr(arg);
 	int i;
@@ -37,7 +37,7 @@ void argfree(char** args){
 	arrfree(args);
 }
 
-int vasend(int fd, char* fmt, ...){
+int vasend(int fd, const char* fmt, ...){
 	char buf[1024];
 	va_list va;
 	va_start(va, fmt);
@@ -102,6 +102,38 @@ void parseresp(void){
 		}
 		arrput(ircpresp.param, line);
 		line += i + 1;
-		if(line[i] == 0 || c == ':') break;
+		if(line[0] == 0 || c == ':') break;
+	}
+}
+
+int isoper(const char* name){
+	int i;
+	for(i = 0; i < arrlen(users); i++){
+		if(strcmp(users[i].name, name) == 0){
+			int j;
+			for(j = 0; users[i].mode[j] != 0; j++){
+				if(users[i].mode[j] == 'o') return 1;
+			}
+			break;
+		}
+	}
+	return 0;
+}
+
+int isauth(const char* name){
+	int i;
+	for(i = 0; i < arrlen(users); i++){
+		if(strcmp(users[i].name, name) == 0) return users[i].auth;
+	}
+	return 0;
+}
+
+void setauth(const char* name, int auth){
+	int i;
+	for(i = 0; i < arrlen(users); i++){
+		if(strcmp(users[i].name, name) == 0){
+			users[i].auth = auth;
+			break;
+		}
 	}
 }

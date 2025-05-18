@@ -1,6 +1,10 @@
 #include "os.h"
 #include "mpserv.h"
 
+#ifndef _WIN32
+#include <netinet/tcp.h>
+#endif
+
 int ircfd;
 int incr = 0;
 
@@ -12,6 +16,7 @@ void adduser(int s, const char* name){
 /* currently only IPv4... sorry! */
 int mpconnect(void){
 	struct sockaddr_in addr;
+	int val = 1;
 
 	ircpresp.param = NULL;
 
@@ -19,6 +24,8 @@ int mpconnect(void){
 
 	ircfd = socket(AFINET, SOCK_STREAM, 0);
 	if(ircfd == -1) return -1;
+
+	setsockopt(ircfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val));
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;

@@ -15,6 +15,7 @@ FILE* dbopen(const char* path){
 
 void dbdel(FILE* f, const char* key){
 	char s2[KEYSIZE + 1];
+	unsigned char buf[VALSIZE + 2];
 	if(strlen(key) > KEYSIZE) return;
 	s2[KEYSIZE] = 0;
 	fseek(f, 0, SEEK_SET);
@@ -31,12 +32,14 @@ void dbdel(FILE* f, const char* key){
 			fflush(f);
 			break;
 		}
+		fread(buf, 1, VALSIZE + 2, f);
 	}
 }
 
 void dbset(FILE* f, const char* key, dbdata_t* val){
 	char s[KEYSIZE + 1];
 	unsigned char c;
+	unsigned char buf[VALSIZE + 2];
 	fseek(f, 0, SEEK_SET);
 	while(1){
 		int a = 0;
@@ -46,6 +49,7 @@ void dbset(FILE* f, const char* key, dbdata_t* val){
 			fseek(f, -KEYSIZE, SEEK_CUR);
 			break;
 		}
+		fread(buf, 1, VALSIZE + 2, f);
 	}
 	memset(s, 0, KEYSIZE + 1);
 	strcpy(s, key);
@@ -60,6 +64,7 @@ void dbset(FILE* f, const char* key, dbdata_t* val){
 
 int dbget(FILE* f, const char* key, dbdata_t* val){
 	char s2[KEYSIZE + 1];
+	unsigned char buf[VALSIZE];
 	if(strlen(key) > KEYSIZE) return 0;
 	s2[KEYSIZE] = 0;
 	fseek(f, 0, SEEK_SET);
@@ -79,6 +84,8 @@ int dbget(FILE* f, const char* key, dbdata_t* val){
 			val->size = a;
 			fread(val->value, 1, VALSIZE, f);
 			return 1;
+		}else{
+			fread(buf, 1, VALSIZE, f);
 		}
 	}
 	return 0;

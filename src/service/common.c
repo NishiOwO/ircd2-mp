@@ -4,6 +4,7 @@
 #include "stb_ds.h"
 
 ircuser_t* users;
+ircchan_t* chans = NULL;
 void common(void){
 	if(strcmp(ircpresp.cmd, "UNICK") == 0 && arrlen(ircpresp.param) >= 7){
 		ircuser_t u;
@@ -68,6 +69,24 @@ void common(void){
 				printf("Mode change User = %s, Mode = %s\n", users[i].name, users[i].mode);
 				break;
 			}
+		}
+	}else if(strcmp(ircpresp.cmd, "NJOIN") == 0 && arrlen(ircpresp.param) >= 2){
+		ircchan_t c;
+		int i;
+		int has = 0;
+		strcpy(c.name, ircpresp.param[0]);
+		c.joined = 0;
+		c.users = NULL;
+		for(i = 0; i < arrlen(chans); i++){
+			if(strcmp(c.name, chans[i].name) == 0){
+				has = 1;
+				break;
+			}
+		}
+		if(has){
+			/* TODO: add user to chans[i].users */;
+		}else{
+			arrput(chans, c);
 		}
 	}
 }

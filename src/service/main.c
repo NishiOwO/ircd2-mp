@@ -39,6 +39,11 @@ int main(int argc, char** argv){
 	int sz;
 	int i;
 	int old = 0;
+#ifdef _WIN32
+	WSADATA wsa;
+
+	WSAStartup(MAKEWORD(1, 1), &wsa);
+#endif
 
 	printf("ircd2+mp service starting\n");
 	for(i = 1; i < argc; i++){

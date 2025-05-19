@@ -1012,7 +1012,7 @@ int	main(int argc, char *argv[])
 	OpenSSL_add_all_algorithms();
 	Debug((DEBUG_NOTICE,"OpenSSL ready"));
 
-	ctx = SSL_CTX_new(TLS_server_method());
+	ctx = SSL_CTX_new(TLSv1_2_server_method());
 	SSL_CTX_use_certificate_file(ctx, "ircd.crt", SSL_FILETYPE_PEM);
 	SSL_CTX_use_PrivateKey_file(ctx, "ircd.key", SSL_FILETYPE_PEM);
 #endif

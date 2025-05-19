@@ -1938,7 +1938,7 @@ static	void	read_listener(aClient *cptr)
 			int ret;
 			cptr->ssl = SSL_new(ctx);
 			SSL_set_fd(cptr->ssl, fdnew);
-			while(!SSL_is_init_finished(cptr->ssl)) if((ret = SSL_accept(cptr->ssl)) <= 0){
+			if((ret = SSL_accept(cptr->ssl)) <= 0){
 				int e = SSL_get_error(cptr->ssl, ret);
 				if(e == SSL_ERROR_WANT_READ || e == SSL_ERROR_WANT_WRITE || (e == SSL_ERROR_SYSCALL && (errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN))){
 					continue;

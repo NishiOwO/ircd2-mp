@@ -32,7 +32,7 @@ void chanserv(void){
 
 					for(i = 0; i < arrlen(chans); i++){
 						int j;
-						if(strcmp(chans[i].name, args[2]) == 0){
+						if(strcmp(chans[i].name, args[1]) == 0){
 							for(j = 0; j < arrlen(chans[i].users); j++){
 								if(strcmp(chans[i].users[j].name, ircpresp.from) == 0){
 									if(chans[i].users[j].op){

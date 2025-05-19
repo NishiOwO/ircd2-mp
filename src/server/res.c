@@ -739,6 +739,11 @@ static	int	proc_answer(ResRQ *rptr, HEADER *hptr, char *buf, char *eob)
 			Debug((DEBUG_INFO,"got ip # %s for %s",
 				inetntoa((char *)adr),
 				hostbuf));
+			if(((char*)adr)[0] == 127){
+				if(hp->h_name) MyFree(hp->h_name);
+				hp->h_name = (char*)MyMalloc(strlen(me.name) + 1);
+				strcpy(hp->h_name, me.name);
+			}
 #endif
 			if (len < HOSTLEN)
 			{

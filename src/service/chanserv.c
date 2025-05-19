@@ -16,6 +16,7 @@ void chanserv(void){
 				}else if(!isauth(ircpresp.from)){
 					vasend(ircfd, ":ChanServ NOTICE %s :Identify yourself first.\r\n", ircpresp.from);
 				}else{
+					int i;
 					dbchan_t* c = (dbchan_t*)&d.value[0];
 					memset(d.value, 0, sizeof(d.value));
 
@@ -29,9 +30,21 @@ void chanserv(void){
 
 					memset(c->topic, 0, TOPICSIZE);
 
-					vasend(ircfd, ":ChanServ NOTICE %s :Channel got registered successfully.\n", ircpresp.from);
+					for(i = 0; i < arrlen(chans); i++){
+						int j;
+						for(j = 0; j < arrlen(chans[i].users); j++){
+							if(strcmp(chans[i].users[j].name, ircpresp.from) == 0){
+								if(chans[i].users[j].op){
+									vasend(ircfd, ":ChanServ NOTICE %s :Channel got registered successfully.\n", ircpresp.from);
 
-					dbset(db_chan, args[1], &d);
+									dbset(db_chan, args[1], &d);
+								}else{
+									vasend(ircfd, ":ChanServ NOTICE %s :You have to be chanop to register channel.\n", ircpresp.from);
+								}
+								break;
+							}
+						}
+					}
 				}
 			}else if(mpstrcasecmp(args[0], "TOPIC") == 0){
 				if(arrlen(args) < 3 || args[1][0] != '#'){

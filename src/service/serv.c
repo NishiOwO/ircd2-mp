@@ -36,12 +36,14 @@ void channel_scan(void){
 						if(chans[i].users[j].checked == -1) chans[i].users[j].checked = 0;
 						if(!chans[i].users[j].checked){
 							vasend(ircfd, ":ChanServ MODE %s +o %s\r\n", chans[i].name, chans[i].users[j].name);
+							chans[i].users[j].op = 1;
 						}
 						chans[i].users[j].checked = 1;
 					}else{
 						if(chans[i].users[j].checked == 1) chans[i].users[j].checked = 0;
 						if(!chans[i].users[j].checked){
 							vasend(ircfd, ":ChanServ MODE %s -o %s\r\n", chans[i].name, chans[i].users[j].name);
+							chans[i].users[j].op = 0;
 						}
 						chans[i].users[j].checked = -1;
 					}

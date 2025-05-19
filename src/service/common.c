@@ -54,6 +54,33 @@ void common(void){
 				break;
 			}
 		}
+	}else if(strcmp(ircpresp.cmd, "MODE") == 0 && arrlen(ircpresp.param) == 3){
+		/* MODE <channel> <mode> <user> */
+		int i;
+		for(i = 0; i < arrlen(chans); i++){
+			if(strcmp(chans[i].name, ircpresp.param[0]) == 0){
+				int j;
+				int k;
+				for(k = 1; ircpresp.param[1][k] != 0; k++){
+					if(ircpresp.param[1][k] != 'o') continue;
+					if(ircpresp.param[1][0] == '+'){
+						for(j = 0; j < arrlen(chans[i].users); j++){
+							if(strcmp(chans[i].users[j].name, ircpresp.param[2]) == 0){
+								chans[i].users[j].op = 1;
+							}
+						}
+					}else if(ircpresp.param[1][0] == '-'){
+						for(j = 0; j < arrlen(chans[i].users); j++){
+							if(strcmp(chans[i].users[j].name, ircpresp.param[2]) == 0){
+								chans[i].users[j].op = 0;
+							}
+						}
+					}
+				}
+				printf("Mode change User = %s, Mode = %s\n", users[i].name, users[i].mode);
+				break;
+			}
+		}
 	}else if(strcmp(ircpresp.cmd, "MODE") == 0 && arrlen(ircpresp.param) == 2){
 		int i;
 		for(i = 0; i < arrlen(users); i++){
@@ -119,6 +146,7 @@ void common(void){
 
 				cu.name = u;
 				cu.checked = ircpresp.param[1][old] == '@' ? 0 : -1;
+				if(ircpresp.param[1][old] == '@') cu.op = 1;
 				if(has){
 					int userin = 0;
 					for(j = 0; j < arrlen(chans[i].users); j++){

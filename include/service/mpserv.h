@@ -52,6 +52,7 @@ typedef struct ircuser_ {
 typedef struct ircchanuser_ {
 	char* name;
 	int checked;
+	int op;
 } ircchanuser_t;
 
 typedef struct ircchan_ {

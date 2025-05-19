@@ -63,7 +63,7 @@ void chanserv(void){
 					memcpy(buf, c->owner, USERSIZE);
 
 					if(strcmp(buf, ircpresp.from) == 0){
-						char* s = malloc(1);
+						char* s = malloc(TOPICSIZE + 1);
 						int i;
 						s[0] = 0;
 						for(i = 2; i < arrlen(args); i++){

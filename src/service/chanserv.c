@@ -32,17 +32,20 @@ void chanserv(void){
 
 					for(i = 0; i < arrlen(chans); i++){
 						int j;
-						for(j = 0; j < arrlen(chans[i].users); j++){
-							if(strcmp(chans[i].users[j].name, ircpresp.from) == 0){
-								if(chans[i].users[j].op){
-									vasend(ircfd, ":ChanServ NOTICE %s :Channel got registered successfully.\n", ircpresp.from);
+						if(strcmp(chans[i].name, args[2]) == 0){
+							for(j = 0; j < arrlen(chans[i].users); j++){
+								if(strcmp(chans[i].users[j].name, ircpresp.from) == 0){
+									if(chans[i].users[j].op){
+										vasend(ircfd, ":ChanServ NOTICE %s :Channel got registered successfully.\n", ircpresp.from);
 
-									dbset(db_chan, args[1], &d);
-								}else{
-									vasend(ircfd, ":ChanServ NOTICE %s :You have to be chanop to register channel.\n", ircpresp.from);
+										dbset(db_chan, args[1], &d);
+									}else{
+										vasend(ircfd, ":ChanServ NOTICE %s :You have to be chanop to register channel.\n", ircpresp.from);
+									}
+									break;
 								}
-								break;
 							}
+							break;
 						}
 					}
 				}

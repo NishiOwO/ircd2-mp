@@ -183,6 +183,7 @@ char	*iline_flags_to_string(long flags)
  * D - delayed port
  * S - server only port
  * I - skip ident check (added in +mp)
+ * Z - enable SSL (added in +mp)
  */
 long pline_flags_parse(char *string)
 {
@@ -198,6 +199,10 @@ long pline_flags_parse(char *string)
 	if (index(string, 'I'))
 	{
 		tmp |= PFLAG_SKIPIDENT;
+	}
+	if (index(string, 'Z'))
+	{
+		tmp |= PFLAG_SSL;
 	}
 	return tmp;
 }

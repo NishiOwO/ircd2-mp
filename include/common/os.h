@@ -808,3 +808,9 @@ typedef unsigned long u_long;
 typedef unsigned short u_short;
 #endif
 
+#ifdef HAVE_OPENSSL
+#include <openssl/ssl.h>
+#include <openssl/crypto.h>
+
+extern SSL_CTX* ctx;
+#endif

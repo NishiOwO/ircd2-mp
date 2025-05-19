@@ -93,6 +93,19 @@ int	deliver_it(aClient *cptr, char *str, int len)
 #ifdef	DEBUGMODE
 	writecalls++;
 #endif
+#ifdef HAVE_OPENSSL
+	if(cptr->ssl != NULL){
+		int e;
+		retval = SSL_write(cptr->ssl, str, len);
+		if(retval <= 0){
+			e = SSL_get_error(cptr->ssl, retval);
+			if(e == SSL_ERROR_WANT_WRITE || e == SSL_ERROR_WANT_READ || (e == SSL_ERROR_SYSCALL && (errno == EWOULDBLOCK || errno == EAGAIN || errno == EINTR))){
+				retval = -1;
+				errno = EWOULDBLOCK;
+			}
+		}
+	}else
+#endif
 	retval = send(cptr->fd, str, len, 0);
 
 	/* Prevent overwriting errno of send(). */

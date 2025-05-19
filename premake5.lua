@@ -1,5 +1,17 @@
 flags("MultiProcessorCompile")
 
+newoption({
+	trigger = "openssl",
+	value = "yes/no",
+	description = "Use OpenSSL or not",
+	allowed = {
+		{"yes", "Use OpenSSL"},
+		{"no", "Don't use OpenSSL"}
+	},
+	category = "IRCd",
+	default = "no"
+})
+
 workspace("ircd2-mp")
         configurations({
                 "Debug",
@@ -26,6 +38,10 @@ filter({})
 
 project("Common")
 	kind("StaticLib")
+	filter({"options:openssl=yes"})
+		defines({"HAVE_OPENSSL"})
+		links({"ssl", "crypto"})
+	filter({})
 	files("src/common/*.c")
 	includedirs({
 		"include/common",
@@ -47,6 +63,10 @@ project("Common")
 project("Server")
 	kind("ConsoleApp")
 	targetname("ircd")
+	filter({"options:openssl=yes"})
+		defines({"HAVE_OPENSSL"})
+		links({"ssl", "crypto"})
+	filter({})
 	files("src/server/*.c")
 	removefiles({
 		"src/server/config_read.c",

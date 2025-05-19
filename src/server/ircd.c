@@ -772,6 +772,10 @@ static	void	bad_command(void)
   exit(-1);
 }
 
+#ifdef HAVE_OPENSSL
+SSL_CTX* ctx;
+#endif
+
 int	main(int argc, char *argv[])
 {
 #ifdef _WIN32
@@ -1000,6 +1004,17 @@ int	main(int argc, char *argv[])
 			    }
 		    }
 		    }
+#endif
+
+#ifdef HAVE_OPENSSL
+	SSL_load_error_strings();
+	SSL_library_init();
+	OpenSSL_add_all_algorithms();
+	Debug((DEBUG_NOTICE,"OpenSSL ready"));
+
+	ctx = SSL_CTX_new(TLS_server_method());
+	SSL_CTX_use_certificate_file(ctx, "ircd.crt", SSL_FILETYPE_PEM);
+	SSL_CTX_use_PrivateKey_file(ctx, "ircd.key", SSL_FILETYPE_PEM);
 #endif
 
 	setup_signals();
@@ -1291,8 +1306,8 @@ static	void	open_debugfile(void)
 	if (debuglevel >= 0)
 	    {
 #ifndef _WIN32
-		(void)printf("isatty = %d ttyname = %#x\n",
-			isatty(2), (u_int)ttyname(2));
+		(void)printf("isatty = %d ttyname = %s\n",
+			isatty(2), ttyname(2));
 #endif
 		if (!(bootopt & BOOT_TTY)) /* leave debugging output on fd 2 */
 		    {

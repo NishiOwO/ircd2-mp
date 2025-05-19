@@ -390,10 +390,12 @@ struct	ListItem	{
 #define PFLAG_DELAYED		0x00001
 #define PFLAG_SERVERONLY	0x00002
 #define PFLAG_SKIPIDENT		0x00004
+#define PFLAG_SSL		0x00008
 
 #define IsConfDelayed(x)	((x)->flags & PFLAG_DELAYED)
 #define IsConfServeronly(x)	((x)->flags & PFLAG_SERVERONLY)
 #define IsConfSkipIdent(x)	((x)->flags & PFLAG_SKIPIDENT)
+#define IsConfSSL(x)		((x)->flags & PFLAG_SSL)
 
 #define	IsIllegal(x)	((x)->status & CONF_ILLEGAL)
 
@@ -569,7 +571,9 @@ struct Client	{
 	char	*user2;	/* 2nd param of USER */
 	char	*user3;	/* 3rd param of USER */
 #endif
-
+#ifdef HAVE_OPENSSL
+	SSL* ssl;
+#endif
 };
 
 #define	CLIENT_LOCAL_SIZE sizeof(aClient)

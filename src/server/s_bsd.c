@@ -1615,6 +1615,7 @@ void	set_non_blocking(int fd, aClient *cptr)
 {
 	int	res, nonb = 0;
 
+	if(cptr->ssl != NULL) return;
 	/*
 	** NOTE: consult ALL your relevant manual pages *BEFORE* changing
 	**	 these ioctl's.  There are quite a few variations on them,
@@ -1811,6 +1812,9 @@ aClient	*add_connection(aClient *cptr, int fd)
 	    }
 
 	acptr->fd = fd;
+#ifdef HAVE_OPENSSL
+	acptr->ssl = cptr->ssl;
+#endif
 	set_non_blocking(acptr->fd, acptr);
 	if (set_sock_opts(acptr->fd, acptr) == -1)
 	{
@@ -1923,6 +1927,23 @@ static	void	read_listener(aClient *cptr)
 			break;
 		    }
 		ircstp->is_ac++;
+
+#ifdef HAVE_OPENSSL
+		cptr->ssl = NULL;
+#endif
+		if(cptr->confs->value.aconf != NULL && IsConfSSL(cptr->confs->value.aconf)){
+#ifdef HAVE_OPENSSL
+			int ret;
+			cptr->ssl = SSL_new(ctx);
+			SSL_set_fd(cptr->ssl, fdnew);
+			if((ret = SSL_accept(cptr->ssl)) <= 0){
+				int e = SSL_get_error(cptr->ssl, ret);
+				if(e == SSL_ERROR_WANT_READ || e == SSL_ERROR_WANT_WRITE || (e == SSL_ERROR_SYSCALL && (errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN))){
+				}else break;
+			}
+#endif
+		}
+
 		if (hmlen(local) + 1 >= MAXCLIENTS)
 		    {
 			ircstp->is_ref++;
@@ -2052,6 +2073,19 @@ static	int	read_packet(aClient *cptr, int msg_ready)
 	    !(IsPerson(cptr) && DBufLength(&cptr->recvQ) > 6090))
 	    {
 		errno = 0;
+#ifdef HAVE_OPENSSL
+		if(cptr->ssl != NULL){
+			int e;
+			length = SSL_read(cptr->ssl, readbuf, sizeof(readbuf));
+			if(length <= 0){
+				e = SSL_get_error(cptr->ssl, length);
+				if(e == SSL_ERROR_WANT_READ || (e == SSL_ERROR_SYSCALL && (errno == EWOULDBLOCK || errno == EAGAIN || errno == EINTR))){
+					length = -1;
+					errno = EWOULDBLOCK;
+				}
+			}
+		}else
+#endif
 #ifdef INET6
 		length = recvfrom(cptr->fd, readbuf, sizeof(readbuf), 0, 0, 0);
 #else

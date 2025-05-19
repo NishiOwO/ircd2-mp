@@ -1372,6 +1372,9 @@ void close_client_fd(aClient *cptr)
 		 }
 		del_fd(i, &fdall);
 		hmdel(local, i);
+#ifdef HAVE_OPENSSL
+		if(cptr->ssl != NULL) SSL_free(cptr->ssl);
+#endif
 		(void)CLOSESOCK(i);
 
 		cptr->fd = -1;
@@ -1615,7 +1618,6 @@ void	set_non_blocking(int fd, aClient *cptr)
 {
 	int	res, nonb = 0;
 
-	if(cptr->ssl != NULL) return;
 	/*
 	** NOTE: consult ALL your relevant manual pages *BEFORE* changing
 	**	 these ioctl's.  There are quite a few variations on them,

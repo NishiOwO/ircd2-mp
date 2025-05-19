@@ -1,6 +1,10 @@
 #include "os.h"
 #include "mpserv.h"
 
+#ifdef _WIN32
+#include <direct.h>
+#endif
+
 int ircport = 6667;
 char* servhost = NULL;
 char* servpass = NULL;

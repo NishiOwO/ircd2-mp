@@ -25,7 +25,7 @@ int mpconnect(void){
 	ircfd = socket(AFINET, SOCK_STREAM, 0);
 	if(ircfd == -1) return -1;
 
-	setsockopt(ircfd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val));
+	setsockopt(ircfd, IPPROTO_TCP, TCP_NODELAY, (void*)&val, sizeof(val));
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;

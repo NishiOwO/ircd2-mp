@@ -63,10 +63,20 @@ void chanserv(void){
 					memcpy(buf, c->owner, USERSIZE);
 
 					if(strcmp(buf, ircpresp.from) == 0){
-						memset(c->topic, 0, TOPICSIZE);
-						memcpy(c->topic, args[2], strlen(args[2]));
+						char* str = malloc(1);
+						int i;
+						s[0] = 0;
+						for(i = 2; i < arrlen(args); i++){
+							if(strlen(s) > 0){
+								strcat(s, " ");
+							}
+							strcat(s, args[i]);
+						}
 
-						vasend(ircfd, ":ChanServ TOPIC %s :%s\r\n", args[1], args[2]);
+						memset(c->topic, 0, TOPICSIZE);
+						memcpy(c->topic, s, strlen(s));
+
+						vasend(ircfd, ":ChanServ TOPIC %s :%s\r\n", args[1], s);
 
 						dbset(db_chan, args[1], &d);
 					}else{
